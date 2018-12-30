@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use Illuminate\Http\Request;
 
 /*
@@ -15,6 +16,21 @@ use Illuminate\Http\Request;
 
 Route::post('/register', 'Auth\RegisterController@create');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:api']], function() {
+   Route::get('/user', function(Request $request) {
+       return $request->user();
+   });
+
+    Route::put('/user', function(Request $request) {
+        $name = $request->name;
+        $email = $request->email;
+
+        $user = $request->user();
+        $user->name = $name;
+        $user->email = $email;
+
+        $user->save();
+
+        return ['success' => true, 'message' => 'Profile updated.'];
+    });
 });
